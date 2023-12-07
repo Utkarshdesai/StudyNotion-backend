@@ -93,7 +93,7 @@ const resetpassword = async(req ,res) => {
     if (Userdetail.resettokenexpire < Date.now()) 
     {
         return res.json({
-            message : "token is expire , regenate token again "
+            message : "token is expire , regenrate token again "
         })
     }
 

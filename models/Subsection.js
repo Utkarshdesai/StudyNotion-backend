@@ -24,7 +24,7 @@ const SubsectionSchema = new mongoose.Schema({
 
     additionalurl : {
         type:String ,
-        required : true
+        
     }, 
 
 })
