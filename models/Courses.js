@@ -52,7 +52,13 @@ const CoursesSchema = new mongoose.Schema ({
            type: mongoose.Schema.Types.ObjectId ,
            ref : "Section" 
         }
-     ]
+     ],
+     studentsEnrolled: [{
+        type:mongoose.Schema.Types.ObjectId,
+        //required true 
+        ref:"User",
+    }]
+
 
     
 

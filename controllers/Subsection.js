@@ -39,7 +39,7 @@ exports.createsubsection = async (req, res) => {
         } ,
         {
             new : true
-        })
+        }).populate()
     
     //send response 
     res.status(200).json({
