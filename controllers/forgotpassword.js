@@ -4,6 +4,7 @@ const mailsender = require('../utlis/sendmail')
 const user = require('../models/Userdetail')
 const bcrypt = require("bcrypt");
 const Userdetail = require('../models/Userdetail');
+const crypto = require('crypto')
 
 
 //reset token 
