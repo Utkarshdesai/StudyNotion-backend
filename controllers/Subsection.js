@@ -39,7 +39,7 @@ exports.createsubsection = async (req, res) => {
         } ,
         {
             new : true
-        }).populate()
+        }).populate("Subsection").exec()
     
     //send response 
     res.status(200).json({
@@ -62,7 +62,7 @@ exports.updatesubsection = async (req ,res) => {
     try {
     
     //fectch data that need to update from body 
-    const {coursetitle , Description , Timeduration , subsectionId } = req.body 
+    const {coursetitle , Description , Timeduration , subsectionId ,sectionid } = req.body 
 
     //get video 
     const newvideo = req.files.updatevideo
@@ -76,7 +76,7 @@ exports.updatesubsection = async (req ,res) => {
     }
 
     //update subsection 
-    const updatedsubsection = await Subsection.findByIdAndUpdate({subsectionId} , 
+    const updatedsubsection = await Subsection.findByIdAndUpdate({ _id : subsectionId} , 
 
                                                                 {
                                                                   coursetitle ,
@@ -89,6 +89,13 @@ exports.updatesubsection = async (req ,res) => {
                                                                     new : true
                                                                 })
 
+    //update section 
+    const newsection = await section.findByIdAndUpdate ({_id : sectionid} ,
+                                                        {$push:{Subsection : updatedsubsection._id}},
+                                                        {new:true}).populate("Subsection").exec() 
+
+    console.log(newsection)
+                                                                
     // send response 
     res.status(200).json({
         sucess: true ,
@@ -108,16 +115,59 @@ exports.updatesubsection = async (req ,res) => {
 
 //delete subsection
 exports.deletesubsection = async (req,res) => {
-
-   // get id
-    const id  = req.params.id 
-
-  //validation
+    try {
   
-  //deletesubsection
-  const deletesubsection = await Subsection.findByIdAndDelete(id)
+    //get id
+    const {sectionid ,subsectionid}  = req.body
+ 
+   //validation
+   if(!sectionid || subsectionid ) 
+   {
+      return res.status(404).json({
+         message:"Id not found"
+      })
+   }
+   
+   //deletesubsection
+   const deletesubsection = await Subsection.findByIdAndDelete( {_id : subsectionid })
+   console.log(deletesubsection)
+
+   if (!deletesection )
+   {
+     res.status(404).json({
+        message :"sub section is not deleted"
+     })
+   }
+ 
+ 
+   //delete subsection from section 
+   const deletesection = await section.findByIdAndDelete({_id : sectionid} ,{$pull : {Subsection : subsectionid}})
+   
+   //check if subsection from section is not deleted 
+   if (!deletesection)
+   {
+     res.json({
+        message : "sub section from section is not deleted"
+     })
+   } 
+
+   res.status(200).json({
+     sucesss  :true ,
+     data : deletesubsection ,
+     message:"sub section is deleted sucessfully"
+   })
 
 
+        
+    } catch (error) {
+        
+        res.status(400).json({
+            sucesss  :false,
+             message:"sub section is Not deleted"
+        })
+    }
+
+   
    
 
 }

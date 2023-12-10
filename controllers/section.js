@@ -26,7 +26,7 @@ exports.createsection = async (req ,res ) => {
                                                                 coursecontent : Createsection._id ,   
                                                                        }
                                                            } ,
-                                                           {new: true})
+                                                           {new: true}).populate("Section").exec()
 
     // send response 
     res.status(200).json({
@@ -46,15 +46,16 @@ exports.createsection = async (req ,res ) => {
     }
     }
 
+
 //update section 
 exports.updatesection = async (req ,res) =>{
     try {
 
     //get new data 
-    const {sectiontitle , sectionId} = req.body 
+    const {sectiontitle , sectionId ,courseID} = req.body 
 
     //validations 
-    if(!sectiontitle || !sectionId) 
+    if(!sectiontitle || !sectionId ||!courseID ) 
     {
         return res.json({
             message : "please check all the fields"
@@ -62,10 +63,26 @@ exports.updatesection = async (req ,res) =>{
     }
 
     //update section 
-    const Updatesection = await section.findByIdAndUpdate({sectionId} , {sectiontitle} , {new:true}) 
+    const Updatesection = await section.findByIdAndUpdate({_id : sectionId} , 
+                                                          {sectiontitle : sectiontitle} ,
+                                                          {new:true}) 
 
     //update course 
+    const updateCourse = await course.findByIdAndUpdate ( {_id : courseID} ,
+                                                           {$push : {coursecontent : Updatesection._id}} ,
+                                                            {new:true}).populate("Section").exec()
+    
+    console.log(updateCourse)
+
         
+    //send response 
+      res.status(200).json({
+        sucess:true ,
+        message:"section updated sucessfully",
+        date :Updatesection ,
+      })
+
+
     } catch (error) {
         return res.status(201).json({
             sucess : false ,
@@ -80,10 +97,29 @@ exports.deletesection = async (req,res) => {
     try {
     
     //get id
-    const id = req.params.id 
+    const sectionid = req.params
+    const {courseid} = req.body
 
     //delete section 
-    const deletesection = await section.findByIdAndDelete(id) 
+    const deletesection = await section.findByIdAndDelete( {_id : sectionid }) 
+
+    if(!deletesection) 
+    {
+        res.json({
+            message:"section is not deleted"
+        })
+    }
+    
+    //delete section from course
+    const updatecourse = await course.findByIdAndDelete({_id : courseid} , 
+                                                         {
+                                                            $pull : 
+                                                            {
+                                                              coursecontent : sectionid
+                                                            }
+                                                         },
+                                                          {new :true} 
+                                                         ).populate("coursecontent").exec()
 
     //return response 
     res.status(200).json({
@@ -100,8 +136,6 @@ exports.deletesection = async (req,res) => {
 
 
     }
-
-    
 
 
 }

@@ -34,10 +34,10 @@ const CoursesSchema = new mongoose.Schema ({
         }
     ],
 
-    Tags : [
+    category : [
         {
            type: mongoose.Schema.Types.ObjectId ,
-           ref : "Tags"
+           ref : "category"
         }
      ],
 
@@ -53,6 +53,7 @@ const CoursesSchema = new mongoose.Schema ({
            ref : "Section" 
         }
      ],
+
      studentsEnrolled: [{
         type:mongoose.Schema.Types.ObjectId,
         //required true 

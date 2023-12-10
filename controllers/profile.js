@@ -5,10 +5,11 @@ exports.updateprofile = async (req,res) => {
     try {
 
         //get profile details 
-        const {Profession ,dateofbirth , Gender , About, profileId} = req.body 
+        const {Profession , dateofbirth , Gender , About, profileId} = req.body 
+        const userid = req.user.id
 
         //validations 
-        if(!Profession || !dateofbirth ||!Gender ||!About || !profileId) 
+        if(!Profession || !dateofbirth ||!Gender ||!About || !profileId || !userid) 
         {
             return res.json({
                 message : "fill all the profile details carefully"
@@ -16,7 +17,7 @@ exports.updateprofile = async (req,res) => {
         }
 
         // update profile 
-        const editedprofile = await profiledetail.findOneAndUpdate({profileId} , 
+        const editedprofile = await profiledetail.findOneAndUpdate({_id : profileId} , 
             {Profession ,
             dateofbirth,
             Gender,
@@ -25,6 +26,16 @@ exports.updateprofile = async (req,res) => {
 
             {new:true}) 
 
+      
+
+
+        //update profile in user 
+        const update_additionaldetails = await user.findByIdAndUpdate ( {_id :userid} , 
+                                                                       {$push : {additionaldetail : editedprofile.id}} ,
+                                                                       {new :true}).populate("Profile").exec()
+
+        console.log(update_additionaldetails)
+
         //SEND response 
         res.status(200).json({
             sucess : true ,
@@ -32,13 +43,21 @@ exports.updateprofile = async (req,res) => {
             message :"profile updated sucessfully"
         })
 
-        //update user 
-        const updateuser = await user.findByIdAndUpdate()
-
-        
+           
     } catch (error) {
-        
+        res.status(40).json({
+            sucess : false ,
+            message :"profile not updated"
+        })
     }
 
 }
 
+    exports.deleteprofile = async (req ,res) => {
+    
+    }
+
+
+    exports.updatedisplaypic = async (req,res) => {
+
+    }
