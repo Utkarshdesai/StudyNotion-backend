@@ -1,6 +1,7 @@
 const ratingandreview = require ("../models/RatingAndReview") 
 const course = require("../models/Courses") 
 const RatingAndReview = require("../models/RatingAndReview")
+const { updatecourse } = require("./createcourse")
 
 exports.createRating = async (req ,res) =>{ 
     try {
@@ -31,10 +32,18 @@ exports.createRating = async (req ,res) =>{
     }
 
    //create entry 
-    const updatecourse = await RatingAndReview.create ( {Rating, Review , User: userid})
+    const rating = await RatingAndReview.create ( {Rating, Review , User: userid})
 
    //update course populate 
-    
+    const updatecourse = await course.findByIdAndUpdate({_id:courseId} ,
+                                                         {
+                                                            $push : {
+                                                              RatingAndReview : updatecourse._id
+                                                            }
+
+                                                         },
+
+                                                         {new:true}).populate(RatingAndReview).exec()
 
    //send respose 
     res.status(200).json({
@@ -56,4 +65,25 @@ exports.createRating = async (req ,res) =>{
 
 exports.Avgrating = async (req ,res) => {
 
+}
+
+exports.getallrating = async (req ,res) => {
+    try {
+ 
+        const getallrating = await RatingAndReview.find({}).
+        populate({path :"User" , select : "fiestname lastname image"},).exec() 
+
+        console.log(getallrating)
+     
+        res.status(200).json({
+            sucess:true ,
+            message:"get all rating "
+        })
+        
+    } catch (error) {
+        res.status(401).json({
+            message : "error occur getting rating  "
+        })
+        
+    }
 }

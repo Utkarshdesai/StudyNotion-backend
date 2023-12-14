@@ -53,11 +53,44 @@ exports.updateprofile = async (req,res) => {
 
 }
 
-    exports.deleteprofile = async (req ,res) => {
-    
-    }
+    // exports.deleteprofile = async (req ,res) => {
+      
+    // }
 
 
-    exports.updatedisplaypic = async (req,res) => {
+    // exports.updatedisplaypic = async (req,res) => {
+    //    //get pic from req 
+
+    //    //validations 
+    //    //upload it to cloudinary 
+    //    //update profile
+    //    //send response 
+    // }
+
+    exports.getAlluserdetail = async (req,res) => { 
+       try { 
+        
+        //get user id
+        const userid =req.user.id  
+
+        //get user detail 
+        const userdetails = await user.find({}).populate("additionaldetail").exec() 
+
+        //send response 
+        res.status(200).json({
+            sucess:true,
+            data:userdetails, 
+            message:"all details are fetch sucessfully"
+        })
+        
+       } catch (error) {
+          
+        res.status(400).json({
+            sucess:false,
+            message:"error while getting userdetails"
+        })
+
+       }
+     
 
     }

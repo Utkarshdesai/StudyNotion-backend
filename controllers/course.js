@@ -127,8 +127,61 @@ exports.deletecourse = async (req,res) => {
 }
 
 //get course
-exports.getcourse = async (req,res) => {
+exports.getAllcourse = async (req,res) => {
+    try {
+        
+        //get important properties
+        const getallcourse = await course.find({}, {price:true ,
+             RatingAndReview:true ,Instructor:true , title:true , description:true})
 
+        //send response
+        res.status(200).json({
+            sucess:true ,
+            data:getallcourse,
+            message:"get all courses"
+        })
+       
+    } catch (error) {
+        res.status(400).json({
+            sucess:false ,
+            message:"error while getting course"
+        })
+
+    }
+}
+
+exports.getcoursedetail = async (req,res) => {
+    try {
+
+        //get course id
+        const courseid = req.body 
+
+        //validations 
+        if(!courseid) 
+        {
+            return res.status(404).json({
+                message:"course id is not valid"
+            })
+        }
+
+        //get course detail
+        const coursedetail = await course.findById({_id:courseid}).populate
+                             (" category").populate("RatingAndReview").populate("coursecontent").exec()
+
+        //send response 
+        res.status(200).json({
+            sucess:true ,
+            data:coursedetail,
+            message:"get course details specific to course"
+        })
+
+        
+    } catch (error) {
+        res.status(400).json({
+            sucess:false ,
+            message:"error while getting deatail of course"
+        }) 
+    }
 }
 
    
